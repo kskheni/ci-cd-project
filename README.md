@@ -18,7 +18,22 @@ Branch protection rules play an important role in huge teams, as it inhibits peo
 
 ### Use case
 
-
+```
+Use Case: Deploy new changes that are made available on dockerhub image by github action workflow.
+1 Preconditions
+   Deployment machine provisioned.
+   Self-Hosted GitHub Actions system provisioned.
+   PR to main branch approved
+   Github action for PR approval to main executed and new image pushed to dockerhub repository by the github action workflow
+2 Main Flow
+   DevOps engineer runs the ansible playbook to release new changes in the deployment environment[S1]. pulls new image from dockerhub [S2]. Create new container with same tag name using new image. [S3]
+3 Subflows
+  [S1] Checks if dependencies including Docker and Nginx installed on virtual machine. Install them if not already installed
+  [S2] Pulls the image with new changes from docker hub repository. Check if an container with predetermined tag name is running. If it is running, remove it.
+  [S3] Run coffee app inside new container
+4 Alternative Flows
+  [E1] Github workflow to push image failed.
+```
 
 ### Pipeline Design
 
