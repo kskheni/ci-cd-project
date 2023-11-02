@@ -8,7 +8,13 @@
 
 ### Problem Statement
 
+The problem is the inefficiency in manually managing and deploying an application that matures over time with new requirements, dependencies and features. This process is prone to test failures. Traditional deployment practices result in critical issues like inconsistency of versions in development and deployment environments. Assume we want to deploy a large scale project with many dependencies and users, and we need to use a load balancer with 100 virtual machines, it will take plenty of time and resources to provision those virtual machines and set up them to run the software. Similarly, manually testing the application after each change is resource intensive and is prone to human error and unnoticed bugs which would become critical later in the development lifecycle. Manual operations limit the development team’s ability to release updates quickly and efficiently, and therefore, impacts both developers and end-users. Without a streamlined pipeline, developers struggle to ensure that the application is tested thoroughly and dependencies are consistent. As a result, the application may encounter frequent test failures, leading to delays in deployment and a lack of confidence in the deployed software's stability.
 
+> ## Automation reduces the need for manual efforts
+
+The pipeline designed by me packages the coffee project in docker image with all its dependencies, so that it can be easily deployed without worrying about dependencies and inconsistency of versions in development environment and deployment environment. It applies automated testing functionality that will run tests whenever new changes are committed or new Pull Requests have been created. Upon successful completion of tests, the PR can be merged with other branches. This frequent testing can help in finding critical bugs early in the development cycle and resolve them. 
+
+Branch protection rules play an important role in huge teams, as it inhibits people’s power to make unwanted and irrevocable changes. Changes cannot be force pushed, deleted or merged into a protected branch until required status checks pass. This makes the code repository safe from intentional or unintentional harm from inside the team. When new changes are merged with the main branch, a new docker image that has project dependencies and source code is built and pushed to Docker Hub repository so that it could be used to release the new changes in the production environment. It also has release tags that could help in identifying versions of the project. The pipeline is designed in such a way that it can accommodate further changes in the coffee project. It is mostly event triggered, only approval to Pull requests needs human intervention. 
 
 ### Use case
 
