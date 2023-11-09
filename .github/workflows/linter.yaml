@@ -1,23 +1,14 @@
-# name: Lint Node.js and ansible playbook
-# on: push
-# jobs:
-#   lint-Nodejs:
-#     runs-on: self-hosted
-#     steps:
-#       # - name: Checkout code
-#       #   uses: actions/checkout@v4
-#       #   with:
-#       #     fetch-depth: 0
+name: Lint Node.js and ansible playbook
+on: push
+jobs:
+  lint-Nodejs:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 #       # - name: Linter
 #       #   uses: super-linter/super-linter/slim@v5
 #       - name: Echo Something
 #         run: echo "Hello, GitHub Actions!"
-
-name: GitHub Actions Demo
-run-name: ${{ github.actor }} is testing out GitHub Actions
-on: [push]
-jobs:
-  Explore-GitHub-Actions:
-    runs-on: self-hosted
-    steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
