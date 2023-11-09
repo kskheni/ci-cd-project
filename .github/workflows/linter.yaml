@@ -1,0 +1,15 @@
+name: Lint Node.js and ansible playbook
+on:
+  push:
+  pull_request:
+    types: [opened, reopened]
+jobs:
+  lint-Nodejs:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Linter
+        uses: super-linter/super-linter/slim@v5
