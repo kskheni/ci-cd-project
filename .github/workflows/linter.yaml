@@ -3,6 +3,10 @@ on: push
 jobs:
   lint-Nodejs:
     runs-on: self-hosted
+    permissions:
+      contents: read
+      packages: read
+      statuses: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
