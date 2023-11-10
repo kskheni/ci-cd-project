@@ -9,6 +9,6 @@ jobs:
         with:
           fetch-depth: 0
       - name: Linter
-        uses: super-linter/super-linter/slim@v5
+        uses: github/super-linter@v4
 #       - name: Echo Something
 #         run: echo "Hello, GitHub Actions!"
