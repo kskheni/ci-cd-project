@@ -14,5 +14,8 @@ jobs:
           fetch-depth: 0
       - name: Linter
         uses: github/super-linter@v4
+        env:
+          VALIDATE_ALL_CODEBASE: true
+          VALIDATE_JAVASCRIPT_ES: true
 #       - name: Echo Something
 #         run: echo "Hello, GitHub Actions!"
