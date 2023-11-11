@@ -1,6 +1,10 @@
 ---
 name: Lint Node.js and ansible playbook
-on: push
+on: 
+  push:
+  pull_request:
+    types: [opened, reopened]
+    branches: ["main", "dev", "release*"]
 jobs:
   lint-Nodejs:
     runs-on: self-hosted
