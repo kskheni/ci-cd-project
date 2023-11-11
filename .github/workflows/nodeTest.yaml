@@ -1,0 +1,29 @@
+---
+  name: test coffee project
+  on: 
+    push:
+    pull_request:
+      types: [opened, reopened]
+      branches: ["main", "dev", "release*"]
+  jobs:
+    test-coffee-project:
+      runs-on: self-hosted
+      strategy:
+        matrix:
+          node-version: [16.x, 18.x, 20.x]
+
+      steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with: 
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: coffee-project/package-lock.json
+      - run: npm install --include=dev
+        working-directory: coffee-project
+      - run: npm test
+        working-directory: coffee-project
