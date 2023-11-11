@@ -1,3 +1,4 @@
+---
 name: Lint Node.js and ansible playbook
 on: push
 jobs:
@@ -13,10 +14,11 @@ jobs:
         with:
           fetch-depth: 0
       - name: Linter
-        uses: github/super-linter@v4
+        uses: super-linter/super-linter@v5
         env:
           VALIDATE_ALL_CODEBASE: true
           VALIDATE_JAVASCRIPT_ES: true
+          VALIDATE_HTML: true
+          VALIDATE_JSON: true
+          VALIDATE_GITHUB_ACTIONS: true
           GITHUB_TOKEN: ${{ secrets.NCSU_GITHUB_TOKEN }}
-#       - name: Echo Something
-#         run: echo "Hello, GitHub Actions!"
