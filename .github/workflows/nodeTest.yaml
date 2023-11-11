@@ -22,6 +22,7 @@
         with: 
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
+          cache-dependency-path: subdir/package-lock.json
       - name: change working directory to coffee-project
         run: cd coffee-project
       - run: npm install --include=dev
