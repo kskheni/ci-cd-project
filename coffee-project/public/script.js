@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     axios.get('/coffees')
         .then(response => {
-            const coffeeList = document.getElementById('coffeeList');
+            const coffeeList = document.getElementById('coffee-list');
             response.data.forEach(coffee => {
                 const listItem = document.createElement('li');
                 listItem.textContent = `${coffee.name} - $${coffee.price}`;

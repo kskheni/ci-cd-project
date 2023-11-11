@@ -1,0 +1,29 @@
+---
+name: Lint Node.js and ansible playbook
+on: 
+  push:
+  pull_request:
+    types: [opened, reopened]
+    branches: ["main", "dev", "release*"]
+jobs:
+  lint-Nodejs:
+    runs-on: self-hosted
+    permissions:
+      contents: read
+      packages: read
+      statuses: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Linter
+        uses: super-linter/super-linter@v5
+        env:
+          VALIDATE_ALL_CODEBASE: true
+          VALIDATE_ANSIBLE: true
+          VALIDATE_JAVASCRIPT_ES: true
+          VALIDATE_HTML: true
+          VALIDATE_JSON: true
+          VALIDATE_GITHUB_ACTIONS: true
+          GITHUB_TOKEN: ${{ secrets.NCSU_GITHUB_TOKEN }}
