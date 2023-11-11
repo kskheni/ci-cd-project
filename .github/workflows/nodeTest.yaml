@@ -22,5 +22,5 @@
         with: 
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - run: npm install
+      - run: npm install --include=dev
       - run: npm test
