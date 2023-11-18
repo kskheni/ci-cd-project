@@ -1,0 +1,74 @@
+---
+- name: configure virtual machine
+  hosts: all
+  become: yes
+  become_method: sudo
+  tasks:
+  # Nginx and reverse proxy set up
+  - name: Install nginx
+    apt:
+      name: nginx
+      state: latest
+
+  - name: Start nginx service
+    service: 
+      name: nginx
+      enabled: true
+      state: started
+
+  - name: Expose port 80 with iptables # allow external requests to port 80 on linux
+    shell: 
+      "sudo iptables -I INPUT -p tcp -m tcp --dport 80 -j ACCEPT"
+
+  - name: copy nginx configurations to remote machine
+    copy: 
+      src: /nginx/nginx.conf
+      dest: /etc/nginx/sites-available/nginx.conf
+  
+  - name: Delete default file from /etc/nginx/sites-enabled/
+    ansible.builtin.file: 
+      path: /etc/nginx/sites-enabled/default
+      state: absent
+  
+  - name: Enable new site
+    file:
+      src: /etc/nginx/sites-available/nginx.conf
+      dest: /etc/nginx/sites-enabled/nginx.conf
+      state: link
+    notify: Restart Nginx 
+
+  # Docker set up
+  - name: Uninstall all packages conflicting with Docker
+    shell: for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove $pkg; done
+
+  - name: Installing Docker prerequisites
+    shell: |
+      sudo apt-get install -y ca-certificates curl gnupg
+      sudo install -m 0755 -d /etc/apt/keyrings
+      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --yes --dearmor -o /etc/apt/keyrings/docker.gpg
+      sudo chmod a+r /etc/apt/keyrings/docker.gpg
+      echo \
+        "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+        "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+        sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+      
+  - name: update apt
+    shell: sudo apt-get update
+
+  - name: Install docker
+    shell: sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+  - name: check docker is active
+    service:
+      name: docker
+      state: started
+      enabled: yes
+  
+  # - name: Test if docker installed or not
+  #   shell: sudo docker run hello-world
+
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted 

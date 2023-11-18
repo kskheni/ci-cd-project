@@ -1,0 +1,2 @@
+[webserver]
+152.7.177.12 ansible_user=kkheni ansible_python_interpreter=/usr/bin/python3
