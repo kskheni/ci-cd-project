@@ -22,7 +22,7 @@
 
   - name: copy nginx configurations to remote machine
     copy: 
-      src: /nginx/nginx.conf
+      src: ./nginx/nginx.conf
       dest: /etc/nginx/sites-available/nginx.conf
   
   - name: Delete default file from /etc/nginx/sites-enabled/
@@ -63,9 +63,6 @@
       name: docker
       state: started
       enabled: yes
-  
-  # - name: Test if docker installed or not
-  #   shell: sudo docker run hello-world
 
   handlers:
     - name: Restart Nginx
