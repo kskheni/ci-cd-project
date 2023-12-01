@@ -27,5 +27,4 @@ jobs:
       with:
         context: ./coffee-project/
         push: true
-        target: prod
         tags: ${{ secrets.DOCKER_USERNAME }}/coffee-project:latest
