@@ -37,4 +37,4 @@ jobs:
     - name: Pull new image
       run: ssh kkheni@${{ secrets.PRODUCTION_IP }} "sudo docker pull ${{ secrets.DOCKER_USERNAME }}/coffee-project:latest"
     - name: Start new container
-      run: ssh kkheni@${{ secrets.PRODUCTION_IP }} "sudo docker run -d - name coffee-project -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/coffee-project:latest"
+      run: ssh kkheni@${{ secrets.PRODUCTION_IP }} "sudo docker run -d --name coffee-project -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/coffee-project:latest"
