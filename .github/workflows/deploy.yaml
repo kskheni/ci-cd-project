@@ -15,7 +15,7 @@ jobs:
         echo The PR was merged
     - name: Checkout the repo
       uses: actions/checkout@v3
-    - name: Login to Docker Hub
+    - name: Login to Docker Hub in self-hosted runner
       uses: docker/login-action@v2
       with: 
         username: ${{ secrets.DOCKER_USERNAME }}
@@ -28,3 +28,13 @@ jobs:
         context: ./coffee-project/
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/coffee-project:latest
+    - name: Login to Docker Hub in remote server
+      run: ssh kkheni@${{ secrets.PRODUCTION_IP }} "sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}"
+    - name: Stop coffee container
+      run: ssh kkheni@${{ secrets.PRODUCTION_IP }} "sudo docker stop coffee-project"
+    - name: Remove coffee container
+      run: ssh kkheni@${{ secrets.PRODUCTION_IP }} "sudo docker rm coffee-project"
+    - name: Pull new image
+      run: ssh kkheni@${{ secrets.PRODUCTION_IP }} "sudo docker pull ${{ secrets.DOCKER_USERNAME }}/coffee-project:latest"
+    - name: Start new container
+      run: ssh kkheni@${{ secrets.PRODUCTION_IP }} "sudo docker run -d - name coffee-project -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/coffee-project:latest"
