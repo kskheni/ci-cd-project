@@ -32,8 +32,8 @@ jobs:
       run: ssh kkheni@${{ secrets.PRODUCTION_IP }} "sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}"
     - name: Stop and remove coffee container if it exists
       run: ssh kkheni@${{ secrets.PRODUCTION_IP }} "
-          if [ $(sudo docker ps -a --quiet --filter name=coffee-project) ]; then
-            if [ $(sudo docker ps -a --quiet --filter name=coffee-project --filter status=running) ]; then
+          if [ \$(sudo docker ps -a --quiet --filter name=coffee-project) ]; then
+            if [ \$(sudo docker ps -a --quiet --filter name=coffee-project --filter status=running) ]; then
               echo 'Container is running right now';
               sudo docker stop coffee-project;
               echo 'Container has been stopped';
