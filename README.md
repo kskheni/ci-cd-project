@@ -18,6 +18,7 @@ The presence of a streamlined CI/CD pipeline can help tackle these challenges, m
 
 <a name="pipeline-description"></a>
 ## Description of pipeline:
+![alt text](https://github.ncsu.edu/kkheni/CSC-519-Project/blob/dev/PROJECT_REPORT_PIPELINE.png)
 To ensure the efficiency and reliability of the CI/CD pipeline, a GitHub runner has been set up with Docker and Ansible configurations. This runner is configured to SSH into the production environment without requiring password, laying a robust foundation for subsequent automated operations.
 
 The CI/CD pipeline is designed to respond to key events in the development lifecycle. Linting and testing procedures are executed with every push event and pull request targeting designated branches (dev, main, release). This iterative validation process ensures the codebase's adherence to coding standards and maintains its reliability throughout its iterative evolution.
