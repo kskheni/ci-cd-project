@@ -1,10 +1,16 @@
 # CSC 519: Project
 
+## Table of contents
+1. [Team Members](#team-members)
+2. [Project Proposal](#proposal)
+
+<a name="team-members" />
 ## Team Members
 
 1) Kaushal Kheni (Unity ID: kkheni)
 
-## Proposal
+<a name="proposal" />
+## Project Proposal
 
 ### Problem Statement
 
