@@ -1,64 +1,117 @@
-# CSC 519: Project
+## Table of Contents:
+* [Motivation](#motivation)
+* [Description of Pipeline](#pipeline-description)
+* [Prerequisites](#prerequisites)
+* [Folder Structure](#folder-structure)
+* [Setup steps](#setup)
+* [Team members](team-members)
 
-## Table of contents
-* [Team Members](#team-members)
-* [Project Proposal](#proposal)
+<a name="motivation"></a>
+## Motivation/Automation reduces the need for manual efforts
+The inefficiencies inherent in manual application management and deployment have been a persistent challenge in the software development process. The growth of our application, with its evolving requirements, dependencies, and feature sets, has highlighted the need for a streamlined Continuous Integration and Continuous Deployment (CI/CD) pipeline. This need arises from the inadequacies of traditional deployment practices, which often result in test failures, version inconsistencies between development and deployment environments, and significant resource expenditure.
+
+The scenario becomes more complex when considering the deployment of a large-scale project with numerous dependencies and users, requiring the utilization of a load balancer across a large number of virtual machines. The manual provisioning and setup of these virtual machines become resource-intensive tasks, consuming both time and effort. Additionally, the likelihood of introducing inconsistencies in software versions between development and deployment environments is high, posing a significant risk to the stability and reliability of the application.
+
+Furthermore, manual testing after each code change becomes a bottleneck, demanding extensive resources and leaving room for human error and undetected bugs. This approach is not only labor-intensive but also prone to overlooking critical issues that may manifest later in the development lifecycle. Manual operations not only limit the development team's ability to release updates promptly but also impact end-users by delaying the delivery of new features and improvements.
+
+The presence of a streamlined CI/CD pipeline can help tackle these challenges, making it easier for developers to ensure thorough testing and consistent dependencies. Frequent test runs and bug detection help fixing issues earlier in the software development cycle, leading to additional confidence in deployment.
+
+<a name="pipeline-description"></a>
+## Description of pipeline:
+![alt text](https://github.ncsu.edu/kkheni/CSC-519-Project/blob/dev/PROJECT_REPORT_PIPELINE.png)
+To ensure the efficiency and reliability of the CI/CD pipeline, a GitHub runner has been set up with Docker and Ansible configurations. This runner is configured to SSH into the production environment without requiring password, laying a robust foundation for subsequent automated operations.
+
+The CI/CD pipeline is designed to respond to key events in the development lifecycle. Linting and testing procedures are executed with every push event and pull request targeting designated branches (dev, main, release). This iterative validation process ensures the codebase's adherence to coding standards and maintains its reliability throughout its iterative evolution.
+
+The project adheres to the GitFlow methodology and has branch protection rules for main and release branches. Pull requests to these branches necessitate the successful completion of status checks and approval from collaborators, ensuring a controlled and validated integration process. Release branches, created at the end of sprints or when the development of a few logical components has been completed, adhere to semantic versioning (major.minor.patch) and only allow bug fixes before the changes are finally deployed.
+
+After resolving bugs in the release branch, a pull request to the main branch can be made. Approving this pull request triggers the deployment workflow. This workflow establishes connection with DockerHub using GitHub repository secrets for secure login. It builds a new image incorporating the latest coffee project codebase and pushes it to DockerHub. The execution of Ansible playbook guarantees the presence of all dependencies and establishes a reverse proxy for forwarding traffic to the coffee project. The automated deployment process involves stopping and removing the existing container, fetching the latest image from DockerHub, and deploying the coffee project with the updated image.
+
+In this fully automated pipeline, human intervention is limited to the initiation and approval of pull requests. Use of GitHub actions enhances efficiency and markedly reduces the probability of errors during deployment.
+
+Looking forward, as the coffee project matures and integrates additional dependencies, the automation scope will expand. The Dockerfile can be updated to automate the installation of all dependencies during the deployment workflow. In a similar way, the Ansible playbook may undergo changes to seamlessly accommodate evolving requirements. In case the coffee project demands use of load balancer with multiple servers in future, we can improve the deployment workflow and use ansible playbooks to easily deploy on multiple managed hosts. This forward-thinking approach ensures the continued adaptability of the CI/CD pipeline, capable of supporting the project's growth while maintaining a high degree of automation and efficiency.
+
+<a name="prerequisites"></a>
+## Prerequisites for the CI/CD pipeline to work efficiently
+* a GitHub self-hosted runner
+* Docker installed on GitHub runner (needed for SuperLinter)
+* Ansible installed on GitHub runner (To Configure Production environment)
+* Repository secrets required in GitHub workflow
+* Github runner should be able to SSH into production environment without needing a password
+
+<a name="folder-structure"></a>
+## Folder Structure
+```
+CSC-519-Project
+      |---- .github
+      |         L---- workflows
+      |                   |     deploy.yaml
+      |                   |     nodeTest.yaml
+      |                   L---- linter.yaml
+      |---- Ansible
+      |         |---- inventories
+      |         |         L---- hosts.yaml    
+      |         |---- nginx
+      |         |         L---- nginx.conf
+      |         |---- configure.yaml
+      |         L---- Dockerfile
+      |---- coffee-project
+      |         |     // contains coffee project codebase
+      |         |---- Dockerflie  
+      L-------- L---- .dockerignore
+      
+```
+
+### .github/workflows:
+      This folder contains all the GitHub actions workflows. There are in total 3 workflows, deployment workflow, linting workflow and testing workflow.
+<b>1) deploy workflow</b>
+* Trigger: Triggered on the closure of pull requests to the main branch. 
+* Steps: 
+   * Builds and pushes the Docker image to Docker Hub. 
+   * Uses Ansible to configure the production environment. 
+   * Stops and removes the existing Docker container, pulls the new image, and starts a new container. 
+
+<b>2) linter workflow</b>
+* Trigger: Triggered on every push and pull request to specified branches. 
+* Steps: 
+   * Checks out the code and uses Super-Linter to perform linting for Node.js, JavaScript, Ansible, HTML, and JSON. 
+
+<b>3) testing workflow</b>
+* Trigger: Triggered on push and pull requests to designated branches.
+* Steps: 
+   * Checks out the code, sets up Node.js environment, installs dependencies, and runs automated tests. 
+
+### Ansible:
+      This folder has files needed to configure the production environment. It will be used when deploy workflow triggers and will configure the production environment without manual effort. It also has nginx.conf file that is used inside workflow to set up reverse proxy. It also has a Dockerfile that could be used to run ansible playbook inside a container.
+* Installs Nginx.
+* Manages Docker setup, removing conflicts.
+* Set up reverse proxy to forward traffic to the coffee project running inside a container.
+
+### coffee-project:
+      This folder contains the sourcecode of coffee project that is made using NodeJS. It can be containerized using the Dockerfile.
+
+<a name="setup"></a>
+## Setup steps:
+- Since this is an automation pipeline, there is not much that you have to do on the local environment. You need to have an github runner that has docker to pull and run Superlinter and ansible installed for configuring the production environment.
+- There is a set of secrets that are being used in github workflows, so you need to store them in repository secrets.
+- GitHub runner should be able to SSH into production server without password. For this, you will have to authorize SSH key of runner in production server.
+
+Once this steps are completed, the CI/CD pipeline will work smoothly and efficiently.
+
+### local setup steps:
+
+```
+npm install
+node app.js
+```
+
+Testing:
+```
+npm install --include=dev
+npm test
+```
 
 <a name="team-members"></a>
 ## Team Members
 
 1) Kaushal Kheni (Unity ID: kkheni)
-
-<a name="proposal"></a>
-## Project Proposal
-
-### Problem Statement
-
-The problem is the inefficiency in manually managing and deploying an application that grows over time with new requirements, dependencies and features. This process is prone to test failures. Traditional deployment practices result in critical issues like inconsistency of versions in development and deployment environments. Assume we want to deploy a large scale project with many dependencies and users, and we need to use a load balancer with 100 virtual machines, it will take plenty of time and resources to provision those virtual machines and set up them to run the software. Similarly, manually testing the application after each change is resource intensive and is prone to human error and unnoticed bugs which would become critical later in the development lifecycle. Manual operations limit the development team’s ability to release updates quickly and efficiently, and therefore, impacts both developers and end-users. Without a streamlined pipeline, developers struggle to ensure that the application is tested thoroughly and dependencies are consistent. As a result, the application may encounter frequent test failures, leading to delays in deployment and a lack of confidence in the deployed software's stability.
-
-> ## Automation reduces the need for manual efforts
-
-The pipeline designed by me packages the coffee project in docker image with all its dependencies, so that it can be easily deployed without worrying about dependencies and inconsistency of versions in development environment and deployment environment. It applies automated testing functionality that will run tests whenever new changes are committed or new Pull Requests have been created. Upon successful completion of tests, the PR can be merged with other branches. This frequent testing can help in finding critical bugs early in the development cycle and resolve them. 
-
-Branch protection rules play an important role in huge teams, as it inhibits people’s power to make unwanted and irrevocable changes. Changes cannot be force pushed, deleted or merged into a protected branch until required status checks pass. This makes the code repository safe from intentional or unintentional harm from inside the team. When new changes are merged with the main branch, a new docker image that has project dependencies and source code is built and pushed to Docker Hub repository so that it could be used to release the new changes in the production environment. It also has release tags that could help in identifying versions of the project. The pipeline is designed in such a way that it can accommodate further changes in the coffee project. It is mostly event triggered, only approval to Pull requests needs human intervention. 
-
-### Use case
-
-```
-Use Case: Deploy new changes that are made available on dockerhub image by github action workflow.
-1 Preconditions
-   Deployment machine provisioned.
-   Self-Hosted GitHub Actions system provisioned.
-   PR to main branch approved
-   Github action for PR approval to main executed and new image pushed to dockerhub repository by the github action workflow
-2 Main Flow
-   DevOps engineer runs the ansible playbook to release new changes in the deployment environment[S1]. pulls new image from dockerhub [S2]. Create new container with same tag name using new image. [S3]
-3 Subflows
-  [S1] Checks if dependencies including Docker and Nginx installed on virtual machine. Install them if not already installed
-  [S2] Pulls the image with new changes from docker hub repository. Check if an container with predetermined tag name is running. If it is running, remove it.
-  [S3] Run coffee app inside new container
-4 Alternative Flows
-  [E1] Github workflow to push image failed.
-```
-
-### Pipeline Design
-
-![alt text](https://github.ncsu.edu/kkheni/CSC-519-Project/blob/main/pipeline.png)
-
-Assuming that the coffee project is ready to be deployed and released for the first time, we will first have to provision a virtual machine to host the project. The provisioning will be done manually as part of this project; however, some service providers also provide features to automate the provisioning process by using tools like Ansible. For example, AWS EC2. 
-
-Following that, we will have to configure the virtual machine to install dependencies like Docker, Nginx and set up a reverse proxy that is required to host the project. We will use an ansible playbook to automate the configuration.
-
-The software development will follow gitFlow and appropriate testing will be done after each commit and Pull Request using GitHub actions. Testing will include unit testing and linting. It may have other types of testing in an industry scenario e.g. Integration testing, System Testing. If tests fail after any commit, we can either notify team members, create an issue for the test failure or we can do both as well. 
-
-Approving the Pull Request would require human Intervention. Once the Pull Request to the main branch has been tested and approved, a new docker image will be built and pushed on the dockerHub repository.
-
-Now, we will check if all required dependencies for the virtual machine are already installed. We will use ansible to download the docker image on virtual machine from the docker hub repository and then create a container using this image that will run the coffee project.
-
-In the gitflow, we will use semantic versioning for release branches to make it easier to compare versions and we will also tag main branch whenever 
-
-**Re-release**
-
-As we go further in the development process, the coffee project may grow and include more dependencies and we would like to automate as many tasks as possible while releasing those changes. To do that, we can check if any new dependency has to be installed, fetch the latest image from dockerhub, delete the currently running container and create a new docker container using the latest image.
-
-During this whole process, Ansible playbooks have to be run manually.
